@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="main.js"></script>
+    <title>Document</title>
+</head>
+<style>
+    * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    .wrapper-tabs {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        background: #efefef;
+        font-family: 'Source Sans Pro', sans-serif;
+        color: #333;
+    }
+    @media (min-width: 600px) {
+        .wrapper-tabs {
+            padding: 60px 10px;
+        }
+    }
+    .wrapper-tabs h1 {
+        margin: 0;
+        font-family: 'Bree Serif', serif;
+        font-size: 36px;
+    }
+    .wrapper-tabs p {
+        margin-top: 20px;
+        margin-bottom: 0;
+        padding: 0;
+        font-size: 20px;
+        line-height: 1.5;
+    }
+    .tabs {
+        display: flex;
+        flex-wrap: wrap;
+        max-width: 700px;
+        background: #e5e5e5;
+        box-shadow: 0 48px 80px -32px rgba(0,0,0,0.3);
+    }
+    .input {
+        position: absolute;
+        opacity: 0;
+    }
+    .label {
+        width: 100%;
+        padding: 20px 30px;
+        background: #e5e5e5;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 18px;
+        color: #7f7f7f;
+        transition: background 0.1s, color 0.1s;
+    }
+    .label:hover {
+        background: #d8d8d8;
+    }
+    .label:active {
+        background: #ccc;
+    }
+    .input:focus + .label {
+        box-shadow: inset 0px 0px 0px 3px #2aa1c0;
+        z-index: 1;
+    }
+    .input:checked + .label {
+        background: #fff;
+        color: #000;
+    }
+    @media (min-width: 600px) {
+        .label {
+            width: auto;
+        }
+    }
+    .panel {
+        width: 700px;
+        display: none;
+        padding: 20px 30px 30px;
+        background: #fff;
+    }
+    @media (min-width: 600px) {
+        .panel {
+            order: 99;
+        }
+    }
+    .input:checked + .label + .panel {
+        display: block;
+    }
+
+
+    option[value=desc] {
+        background-color: red;
+        color: red;
+    }
+</style>
+<body>
+<div class="wrapper-tabs">
+    <h2>Виберіть фільтр</h2>
+    <div class="tabs">
+        <input class="input" name="tabs" type="radio" data-filter="saved" id="date">
+        <label class="label" for="date">Сортувати за датою</label>
+        <div class="panel">
+            <select id="date-sort" name="date">
+                <option selected disabled>Виберіть тип сортування</option>
+                <option value="desc">Спадання</option>
+                <option value="asc">Зростання</option>
+            </select>
+        </div>
+        <input class="input" name="tabs" type="radio" data-filter="saved" id="tags">
+        <label class="label" for="tags">Вибрати теги</label>
+        <div class="panel">
+            <input type="checkbox" id="sport" data-group="checkbox">
+            <label for="sport">Sport</label>
+            <input type="checkbox" id="culture" data-group="checkbox">
+            <label for="culture">Culture</label>
+            <input type="checkbox" id="business" data-group="checkbox">
+            <label for="business">Business</label>
+            <input type="checkbox" id="showbiz" data-group="checkbox">
+            <label for="showbiz">Showbiz</label>
+            <input type="checkbox" id="tech" data-group="checkbox">
+            <label for="tech">Tech</label>
+            <input type="checkbox" id="food" data-group="checkbox">
+            <label for="food">Food</label>
+            <input type="checkbox" id="politics" data-group="checkbox">
+            <label for="politics">Politics</label>
+
+        </div>
+        <input class="input" name="tabs" type="radio" id="search">
+        <label class="label" for="search">Пошук в заголовці</label>
+        <div class="panel">
+            <input type="text" id="search-input">
+            <h1>Clemantine</h1>
+            <p>A clementine (Citrus ×clementina) is a hybrid between a mandarin orange and a sweet orange, so named in 1902. The exterior is a deep orange colour with a smooth, glossy appearance. Clementines can be separated into 7 to 14 segments. Similarly to tangerines, they tend to be easy to peel.</p>
+        </div>
+    </div>
+</div>
+<div class="wrapper-list">
+    <div class="item">
+        <h2 class="item-title">title</h2>
+        <p class="item-description">description</p>
+        <img class="item-photo" src="" alt="">
+        <p class="item-createdAt">date</p>
+        <span  class="item-tag">tag 1</span>
+    </div>
+</div>
+
+</body>
+</html>
