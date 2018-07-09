@@ -1,13 +1,4 @@
 document.addEventListener("DOMContentLoaded", function() {
-    // const querySettings = {
-    //     filterBy: '',
-    //     date: '',
-    //     tags: []
-    // };
-
-    //global variable
-    let state = [];
-
     const getDataAndRender = async () => {
         try {
             const headers = new Headers();
@@ -17,33 +8,72 @@ document.addEventListener("DOMContentLoaded", function() {
                 headers
             });
             const data = await (await fetch(request)).json();
-            return data.data;
+            return data.data.map((item, index)=> ({
+                ...item,
+                id: index
+            }));
         } catch (err) {
             console.log(err)
         }
     };
 
-    const renderItems = (state, firstIndex = 0, reset = false) => {
+    const renderItems = (state, reset = false) => {
         const wrapper = document.querySelector('.wrapper-list');
         if (reset) {
             while (wrapper.firstChild) {
                 wrapper.removeChild(wrapper.firstChild);
             }
         }
-        wrapper.appendChild(getDoneList(state));
 
-        // wrapper.appendChild(getDoneList(state.splice(firstIndex, 10)));
+        wrapper.appendChild(getDoneList(state.slice(querySettings.index, querySettings.index + 10)));
+        addListenersBtnDelete();
+    };
+
+    const addListenersBtnDelete = () => {
+        document.querySelectorAll('button[data-group=btn]').forEach(btn => {
+            btn.addEventListener('click', ({ target: { value }}) => {
+                deleteItem(Number(value));
+            });
+        });
+    };
+
+    const addItems = () => {
+        querySettings.index += 10;
+        if (querySettings.index > state.length) {
+            return
+        } else {
+            renderItems(state);
+        }
+    };
+
+    const resetItems = () => {
+        window.scrollTo(0, 0);
+        querySettings.index = 0;
+        renderItems(state, true);
+    };
+
+    const deleteItem = (index) => {
+      state = state.filter(({id}) => id !== index);
+      renderItems(state, true);
     };
 
     const applyFilter = (state, reset = false) => {
         switch(querySettings.filterBy) {
             case "date":
-                renderItems(state.sort(sortDate), 0, reset);
+                renderItems(state.sort(sortDate), reset);
                 break;
             case "tags":
-                renderItems(state.sort(cmfnTage), 0, reset);
+                renderItems(state.sort(cmfnTage), reset);
                 break;
         }
+    };
+
+    const applySearchByTitle = (value) => {
+        const filteredState = state.filter(({title}) => {
+            return title.toLowerCase().indexOf(value.toLowerCase()) > -1;
+        });
+        querySettings.index = 0;
+        renderItems(filteredState, true);
     };
 
     const sortDate = (a, b) => {
@@ -75,12 +105,11 @@ document.addEventListener("DOMContentLoaded", function() {
             state = data;
             renderItems(data);
             setTemplateTab(querySettings);
-            // applyFilter(state);
         });
     };
 
 
-    const getTemplateCard = ({title, description, image, createdAt, tags}) => {
+    const getTemplateCard = ({title, description, image, createdAt, tags, id}) => {
         const date = new Date(createdAt);
         return `<div class="item">
                     <h2 class="item-title">${title}</h2>
@@ -88,6 +117,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     <img class="item-photo" src="${image}" alt="">
                     <p class="item-createdAt"> ${date.getFullYear()} ${date.getHours()} ${date.getMinutes()}</p>
                     <span  class="item-tag">${tags}</span>
+                    <button data-group="btn" value="${id}">delete item</button>
                 </div>`
     };
 
@@ -111,7 +141,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
     const setTemplateCheckboxes = (...checkboxes) => {
         checkboxes.forEach(value => {
-            console.log('v', value);
             const checkbox = document.querySelector(`#${value}`);
             checkbox.checked = true;
         });
@@ -133,16 +162,26 @@ document.addEventListener("DOMContentLoaded", function() {
     const getDefaultSettings = () => {
         const defaultSettings= localStorage.getItem('defaultSettings');
         if (defaultSettings) {
-            return JSON.parse(defaultSettings);
+            return ({
+                ...JSON.parse(defaultSettings),
+                index: 0
+            })
         } else {
             return ({
                 filterBy: 'date',
                 date: 'desc',
-                tags: []
+                tags: [],
+                index: 0
             });
         }
     };
 
+
+
+    //global variable
+    let state = [];
+
+    //global variable
     const querySettings = getDefaultSettings();
     setState();
 
@@ -152,11 +191,15 @@ document.addEventListener("DOMContentLoaded", function() {
         applyFilter(state, true);
     });
 
+    const btnReset = document.querySelector('#reset');
+    btnReset.addEventListener('click', () => resetItems());
+
     const tabCheckboxes = document.querySelectorAll("input[data-filter=saved]");
     tabCheckboxes.forEach(function (checkbox) {
         checkbox.addEventListener( 'change', function ({ target: { id }}) {
             if (this.checked) {
                 querySettings.filterBy = id;
+                querySettings.index = 0;
                 applyFilter(state, true)
             }
         });
@@ -171,9 +214,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 const index = querySettings.tags.indexOf(id);
                 querySettings.tags.splice(index, 1);
             }
-
             applyFilter(state, true);
-            console.log('filter', querySettings);
         });
     });
 
@@ -181,16 +222,23 @@ document.addEventListener("DOMContentLoaded", function() {
     const inputSearch = document.querySelector('#search-input');
 
     inputSearch.addEventListener('keyup', ({ target: { value }}) => {
-        console.log('ev targ', value);
         applySearchByTitle(value);
     }, false);
 
-
-
     window.addEventListener("beforeunload", function() {
         saveSettings(querySettings);
-        console.log("SAVE", querySettings);
     });
+
+    window.addEventListener('scroll', function() {
+        const pageHeight = document.documentElement.offsetHeight;
+        const windowHeight=window.innerHeight;
+        const scrollPosition=window.scrollY || window.pageYOffset || document.body.scrollTop + (document.documentElement && document.documentElement.scrollTop || 0);
+
+        if (pageHeight <= windowHeight+scrollPosition) {
+            addItems();
+        }
+    });
+
 
     function saveSettings(options) {
         localStorage.setItem('defaultSettings', JSON.stringify(options));

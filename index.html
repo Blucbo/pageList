@@ -97,13 +97,14 @@
         display: block;
     }
 
-
-    option[value=desc] {
-        background-color: red;
-        color: red;
+    #reset {
+        position: fixed;
+        right: 0;
+        padding: 5px;
     }
 </style>
 <body>
+<button id="reset">Reset to 10</button>
 <div class="wrapper-tabs">
     <h2>Виберіть фільтр</h2>
     <div class="tabs">
@@ -139,19 +140,10 @@
         <label class="label" for="search">Пошук в заголовці</label>
         <div class="panel">
             <input type="text" id="search-input">
-            <h1>Clemantine</h1>
-            <p>A clementine (Citrus ×clementina) is a hybrid between a mandarin orange and a sweet orange, so named in 1902. The exterior is a deep orange colour with a smooth, glossy appearance. Clementines can be separated into 7 to 14 segments. Similarly to tangerines, they tend to be easy to peel.</p>
         </div>
     </div>
 </div>
 <div class="wrapper-list">
-    <div class="item">
-        <h2 class="item-title">title</h2>
-        <p class="item-description">description</p>
-        <img class="item-photo" src="" alt="">
-        <p class="item-createdAt">date</p>
-        <span  class="item-tag">tag 1</span>
-    </div>
 </div>
 
 </body>
